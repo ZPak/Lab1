@@ -1,13 +1,13 @@
 # Lab1
 
 How to Run:
-  Use Processing
+  Open in Processing, you will probably need the Skarner picture
   
 What it Does:
   Simulates Conway's Game of life with additional rules, the first generation is 
   determined randomly
   
-  Also I used Skarner from League of Legends
+  Also I used Skarner from League of Legends :D
   
 Rules:
   Cells come alive if they have 3 living neighbors
