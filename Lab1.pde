@@ -20,7 +20,7 @@ void draw(){
   //navigates 2d array
   for(int x=0; x<cols; x++){
     for(int y=0; y<rows; y++){
-      grid[x][y].walk();
+      //grid[x][y].walk();
       grid[x][y].display();
       //kills cells with less than 2 or more than 3 neighbors
       if((grid[x][y].getVitality() > 0) && ((grid[x][y].getNeighbors().size() < 2) || (grid[x][y].getNeighbors().size() > 3))){
@@ -127,7 +127,7 @@ class Scorpion{
   void birth(){
     vitality = MAX_HEALTH;
   }
-  
+  /*
   //random walking functionality to be added  
   void walk(){
     int direction = int(random(9));
@@ -184,5 +184,5 @@ class Scorpion{
     if(vitality == 0){
       this.kill();
     }
-  }
+  }*/
 }
