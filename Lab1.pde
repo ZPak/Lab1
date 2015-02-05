@@ -13,7 +13,7 @@ Scorpion[][] grid = new Scorpion[cols][rows]; //original grid
 void setup(){
   size(width, height);
   colorMode(HSB, 100);
-  frameRate(15);
+  frameRate(1);
   populate(); 
   numGenerations = 1;
 }
@@ -34,11 +34,15 @@ void draw(){
         }
       } else {
         //cells can live on their own if they have at least 3 health
-        if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() < 2)){
+        if((grid[x][y].getVitality() < 4) && (grid[x][y].getNeighbors().size() < 2)){
           grid[x][y].setTempVitality(0);
         }
-        //kills cells with than 3 neighbors
-        if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 4)){
+        //damages cells with more than 3 neighbors
+        if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 3)){
+          grid[x][y].setTempVitality(grid[x][y].getVitality()-1);
+        }
+        //kills cells with more than 5 neighbors
+        if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 5)){
           grid[x][y].setTempVitality(0);
         }
         //gives birth to cells with 3 neighbors
@@ -240,3 +244,5 @@ class Scorpion{
     }
   }
 }
+
+
