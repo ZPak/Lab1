@@ -2,67 +2,95 @@
 
 int width = 900;
 int height = 600;
-int cellSize = 10;
+int cellSize = 30;
 int rows = height/cellSize;
 int cols = width/cellSize;
 int numGenerations;
 int RELEASE_THE_HOUNDS = 2;
 int MAX_HEALTH = 5;
+boolean pause = false;
+int framerate = 15;
 Scorpion[][] grid = new Scorpion[cols][rows]; //original grid
 
 void setup(){
   size(width, height);
   colorMode(HSB, 100);
-  frameRate(1);
   populate(); 
   numGenerations = 1;
 }
 
 void draw(){
   //navigates 2d array
-  for(int x=0; x<cols; x++){
-    for(int y=0; y<rows; y++){
-      grid[x][y].walk();
-      grid[x][y].display();
-      if(grid[x][y].isRabid()){
-        if(grid[x][y].getNeighbors().size() > 0){
-          for(int i=0; i<grid[x][y].getNeighbors().size(); i++){
-            grid[x][y].getNeighbors().get(i).death();
-            grid[x][y].kill();
+  frameRate(framerate);
+  if(!pause){
+    for(int x=0; x<cols; x++){
+      for(int y=0; y<rows; y++){
+        grid[x][y].walk();
+        grid[x][y].display();
+        if(grid[x][y].isRabid()){
+          if(grid[x][y].getNeighbors().size() > 0){
+            for(int i=0; i<grid[x][y].getNeighbors().size(); i++){
+              grid[x][y].getNeighbors().get(i).death();
+              grid[x][y].kill();
+            }
+            grid[x][y].setTempVitality(grid[x][y].getVitality()+1);
           }
-          grid[x][y].setTempVitality(grid[x][y].getVitality()+1);
-        }
-      } else {
-        //cells can live on their own if they have at least 3 health
-        if((grid[x][y].getVitality() < 4) && (grid[x][y].getNeighbors().size() < 2)){
-          grid[x][y].setTempVitality(0);
-        }
-        //damages cells with more than 3 neighbors
-        if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 3)){
-          grid[x][y].setTempVitality(grid[x][y].getVitality()-1);
-        }
-        //kills cells with more than 5 neighbors
-        if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 5)){
-          grid[x][y].setTempVitality(0);
-        }
-        //gives birth to cells with 3 neighbors
-        if((grid[x][y].getVitality() <= 0) && (grid[x][y].getNeighbors().size() == 3)){
-          grid[x][y].setTempVitality(MAX_HEALTH);
+        } else {
+          //cells can live on their own if they have at least 3 health
+          if((grid[x][y].getVitality() < 4) && (grid[x][y].getNeighbors().size() < 2)){
+            grid[x][y].setTempVitality(0);
+          }
+          //damages cells with more than 3 neighbors
+          if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 3)){
+            grid[x][y].setTempVitality(grid[x][y].getVitality()-1);
+          }
+          //kills cells with more than 5 neighbors
+          if((grid[x][y].getVitality() > 0) && (grid[x][y].getNeighbors().size() > 5)){
+            grid[x][y].setTempVitality(0);
+          }
+          //gives birth to cells with 3 neighbors
+          if((grid[x][y].getVitality() <= 0) && (grid[x][y].getNeighbors().size() == 3)){
+            grid[x][y].setTempVitality(MAX_HEALTH);
+          }
         }
       }
     }
-  }
-  //sets changes to be the current grid
-  for(int x=0; x<cols; x++){
-    for(int y=0; y<rows; y++){
-      grid[x][y].update();
+    //sets changes to be the current grid
+    for(int x=0; x<cols; x++){
+      for(int y=0; y<rows; y++){
+        grid[x][y].update();
+      }
     }
   }
   numGenerations++;
   if(numGenerations == RELEASE_THE_HOUNDS){
     for(int i=1; i<3; i++){
-      grid[(int)random(cols)][(int)random(rows)].makeRabid();
+      //grid[(int)random(cols)][(int)random(rows)].makeRabid();
     }
+  }
+}
+
+void keyPressed(){
+  if(key == ' '){
+    pause = !pause;
+  } else if (key == '+'){
+    framerate++;
+  } else if (key == '-'){
+    if(framerate-1 > 0){
+      framerate--;
+    }
+  }
+}
+
+void mousePressed(){
+  if(grid[mouseX/cellSize][mouseY/cellSize].getVitality() > 0){
+    grid[mouseX/cellSize][mouseY/cellSize].death();
+    grid[mouseX/cellSize][mouseY/cellSize].setTempVitality(0);
+    grid[mouseX/cellSize][mouseY/cellSize].display();
+  } else {
+    grid[mouseX/cellSize][mouseY/cellSize].birth();
+    grid[mouseX/cellSize][mouseY/cellSize].setTempVitality(MAX_HEALTH);
+    grid[mouseX/cellSize][mouseY/cellSize].display();
   }
 }
 
@@ -112,7 +140,7 @@ class Scorpion{
       }
       image(img, x*cellSize, y*cellSize);
     } else {
-      rect(x*cellSize,y*cellSize,(x+1)*cellSize,(y+1)*cellSize);
+      rect(x*cellSize,y*cellSize,cellSize,cellSize);
     }
   }
   
